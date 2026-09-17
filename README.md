@@ -1,29 +1,70 @@
-# RefExtract - Reference & Information Extraction Android App
+RefExtract User Guide
+Prerequisites
+Install Java JDK 17 or higher on your computer before proceeding. If you plan to install directly onto a phone connected via USB, enable USB Debugging on the device.
 
-RefExtract is a Kotlin Jetpack Compose Android application designed for real-time text analysis, citation tracking, reference extraction, named entity recognition, and metric categorization.
+Option 1: Automatic Setup via Scripts
+Windows (PowerShell)
+Run from inside the project folder (uses current directory by default):
 
-## Features
+powershell
 
-- **Real-Time Live Extraction**: Debounced text analysis as you type or paste documents.
-- **Reference & Citation Parser**: Detects DOIs, arXiv preprints, APA/Harvard citations, bracketed numeric citations (`[1]`, `[12-15]`), patents, ISBNs, and web URLs.
-- **Named Entity Recognition**: Identifies people, organizations (corporate & institutional), locations, and technology terms.
-- **Metrics & Quantitative Analytics**: Extracts currencies with comma formatting (`$1,500.50`, `€50k`), percentages, and measurement units.
-- **Temporal & Date Extractor**: Detects calendar dates, numeric dates (`YYYY-MM-DD`), fiscal quarters (`Q3 2024`), and contextual years.
-- **Direct Speech & Quotes**: Captures quoted text with speaker attribution.
-- **Custom Rules Engine**: User-definable regex extraction rules stored locally in Room Database.
-- **Export Options**: Export structured results to JSON, CSV, and Markdown.
 
-## Building and Running
+cd C:\path\to\refextract
+.\run.ps1
+Or pass the project directory as a parameter:
 
-### Prerequisites
-- Android Studio Ladybug or newer
-- JDK 17 or Java 21
-- Android SDK 24+
+powershell
 
-### Build Steps
-1. Clone or download the repository.
-2. Open the project in Android Studio.
-3. Build and run on an Android Emulator or physical device:
-   ```bash
-   ./gradlew assembleDebug
-   ```
+
+.\run.ps1 -ProjectDir "C:\path\to\refextract"
+macOS and Linux (Bash)
+Run from inside the project folder (uses current directory by default):
+
+bash
+
+
+cd /path/to/refextract
+chmod +x run.sh
+./run.sh
+Or pass the project directory as an argument:
+
+bash
+
+
+./run.sh /path/to/refextract
+What the scripts do
+Verify that Java is installed on your system.
+Compile the application into an installable package file.
+If an Android device or emulator is connected via USB, install and launch the app automatically.
+If no device is connected, display the file path of the compiled package so you can transfer it to your phone manually.
+Option 2: Manual Build
+For Windows:
+
+cmd
+
+
+cd C:\path\to\refextract
+gradle assembleDebug
+For macOS or Linux:
+
+bash
+
+
+cd /path/to/refextract
+./gradlew assembleDebug
+The compiled package is generated at: app/build/outputs/apk/debug/app-debug.apk
+
+Transfer this file to your phone via USB cable, cloud storage, or email. Tap the file on your phone to install it. If prompted, allow installation from unknown sources in your phone settings.
+
+How to Use the App
+Open RefExtract on your phone or emulator.
+Type or paste any text into the main input box. The app analyzes your text automatically as you type.
+Detected items are highlighted in the interactive viewer by category:
+References and Citations (DOIs, academic citations, bracketed numbers, web links)
+Quotations and Direct Speech with speaker attributions
+Named Entities (People, Companies, Institutions, Locations, Technologies)
+Metrics and Financials (Currencies, Percentages, Quantities)
+Temporal Dates (Calendar dates, Numeric formats, Fiscal quarters)
+Tap any highlighted element to inspect its metadata.
+Use the filter chips to narrow results by category.
+Use the top menu to export results in JSON, CSV, or Markdown format.
