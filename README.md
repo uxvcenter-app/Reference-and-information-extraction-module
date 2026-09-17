@@ -9,7 +9,7 @@
 
 ---
 
-## Setting Up Your Gemini API Key (Optional AI Features)
+## Setting Up Your Gemini API Key 
 
 RefExtract runs with local extraction by default. If you want to enable advanced cloud AI extraction using Gemini:
 
