@@ -110,6 +110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun analyze() {
+        analyzeJob?.cancel()
         val text = _inputText.value
         if (text.isBlank()) {
             _currentResult.value = null
@@ -148,7 +149,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
             } catch (e: Exception) {
-                // If anything fails, fallback smoothly
+                android.util.Log.e("MainViewModel", "Extraction failed: ${e.message}", e)
+                _currentResult.value = null
             } finally {
                 _isAnalyzing.value = false
             }

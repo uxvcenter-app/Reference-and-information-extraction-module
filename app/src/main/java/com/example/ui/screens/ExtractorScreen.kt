@@ -427,7 +427,7 @@ fun ExtractorScreen(
         if (currentResult != null && currentResult!!.items.isNotEmpty()) {
             item {
                 HighlightedTextView(
-                    text = inputText,
+                    text = currentResult!!.inputText,
                     items = currentResult!!.items,
                     selectedItemId = selectedItemId,
                     onItemClick = { item ->
