@@ -65,7 +65,7 @@ on Windows, or `sdk.dir=/home/you/Android/Sdk` on Linux.
 
 ---
 
-## Step 3 (Optional): Set Up a Gemini API Key
+## Step 3 : Set Up a Gemini API Key
 
 RefExtract runs with local extraction by default and works fine without a key. To enable
 cloud AI extraction using Gemini:
