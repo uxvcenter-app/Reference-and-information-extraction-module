@@ -1,0 +1,19 @@
+# Normalize text files to LF in the repository.
+* text=auto
+
+# The Gradle wrapper script must keep LF endings, otherwise it fails on
+# macOS and Linux with "bad interpreter: /bin/sh^M".
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Windows-only scripts keep CRLF.
+gradlew.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files must never be line-ending converted.
+*.jar binary
+*.png binary
+*.webp binary
+*.jpg binary
+*.keystore binary
+*.jks binary
