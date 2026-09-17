@@ -1,5 +1,20 @@
 # PowerShell script to build, install, and run RefExtract
+#
+# Usage:
+#   .\run.ps1                              (uses current directory)
+#   .\run.ps1 -ProjectDir "C:\path\to\refextract"
 
+param(
+    [string]$ProjectDir = (Get-Location).Path
+)
+
+if (-not (Test-Path $ProjectDir)) {
+    Write-Host "Directory not found: $ProjectDir" -ForegroundColor Red
+    exit 1
+}
+
+Set-Location $ProjectDir
+Write-Host "Project directory: $ProjectDir" -ForegroundColor Cyan
 Write-Host "Starting RefExtract setup..." -ForegroundColor Cyan
 
 # Step 1: Check Java installation
@@ -13,13 +28,13 @@ try {
 
 # Step 2: Build the APK
 Write-Host "Building application package..." -ForegroundColor Cyan
-if (Test-Path ".\gradlew.bat") {
-    .\gradlew.bat assembleDebug
+if (Test-Path "$ProjectDir\gradlew.bat") {
+    & "$ProjectDir\gradlew.bat" assembleDebug
 } else {
     gradle assembleDebug
 }
 
-$apkPath = "app\build\outputs\apk\debug\app-debug.apk"
+$apkPath = Join-Path $ProjectDir "app\build\outputs\apk\debug\app-debug.apk"
 
 if (-not (Test-Path $apkPath)) {
     Write-Host "Build failed. Please check build logs." -ForegroundColor Red
@@ -52,4 +67,4 @@ if ($adbPath) {
 
 Write-Host "No connected Android device detected via ADB." -ForegroundColor Yellow
 Write-Host "You can transfer the APK file to your phone or emulator to install:" -ForegroundColor Cyan
-Write-Host "$((Get-Item $apkPath).FullName)" -ForegroundColor White
+Write-Host "$apkPath" -ForegroundColor White

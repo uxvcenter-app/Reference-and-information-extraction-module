@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 
 # Bash script to build, install, and run RefExtract
+#
+# Usage:
+#   ./run.sh                              (uses current directory)
+#   ./run.sh /path/to/refextract
 
+PROJECT_DIR="${1:-.}"
+
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "Directory not found: $PROJECT_DIR"
+    exit 1
+fi
+
+cd "$PROJECT_DIR" || exit 1
+echo "Project directory: $(pwd)"
 echo "Starting RefExtract setup..."
 
 # Step 1: Check Java
@@ -32,7 +45,7 @@ echo "Build successful! Package located at: $APK_PATH"
 
 # Step 3: Check ADB and device
 if command -v adb &> /dev/null; then
-    DEVICES=$(adb devices | grep -w "device")
+    DEVICES=$(adb devices | grep -w "device$")
     if [ -n "$DEVICES" ]; then
         echo "Connected Android device detected. Installing package..."
         adb install -r "$APK_PATH"
