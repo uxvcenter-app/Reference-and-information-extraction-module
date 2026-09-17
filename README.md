@@ -1,70 +1,100 @@
-RefExtract User Guide
-Prerequisites
-Install Java JDK 17 or higher on your computer before proceeding. If you plan to install directly onto a phone connected via USB, enable USB Debugging on the device.
 
-Option 1: Automatic Setup via Scripts
-Windows (PowerShell)
+
+# RefExtract User Guide
+
+## Prerequisites
+
+- **Java JDK 17 or higher**: Install on your computer before building the project.
+- **USB Debugging**: Enable on your mobile device if installing directly over USB cable.
+
+---
+
+## Setting Up Your Gemini API Key 
+
+RefExtract runs with local extraction by default. If you want to enable advanced cloud AI extraction using Gemini:
+
+1. Copy `.env.example` in the root folder of the project and rename the copy to `.env`.
+2. Open `.env` in any text editor.
+3. Replace `MY_GEMINI_API_KEY` with your actual Google Gemini API Key:
+   ```text
+   GEMINI_API_KEY=your_actual_gemini_api_key_here
+   ```
+4. Build the application package. The build process automatically bundles the key. If no key is configured, the application smoothly uses built-in local engine rules.
+
+---
+
+## Option 1: Automatic Setup via Scripts
+
+### Windows (PowerShell)
+
 Run from inside the project folder (uses current directory by default):
-
-powershell
-
-
+```powershell
 cd C:\path\to\refextract
 .\run.ps1
+```
+
 Or pass the project directory as a parameter:
-
-powershell
-
-
+```powershell
 .\run.ps1 -ProjectDir "C:\path\to\refextract"
-macOS and Linux (Bash)
+```
+
+### macOS and Linux (Bash)
+
 Run from inside the project folder (uses current directory by default):
-
-bash
-
-
+```bash
 cd /path/to/refextract
 chmod +x run.sh
 ./run.sh
+```
+
 Or pass the project directory as an argument:
-
-bash
-
-
+```bash
 ./run.sh /path/to/refextract
-What the scripts do
-Verify that Java is installed on your system.
-Compile the application into an installable package file.
-If an Android device or emulator is connected via USB, install and launch the app automatically.
-If no device is connected, display the file path of the compiled package so you can transfer it to your phone manually.
-Option 2: Manual Build
-For Windows:
+```
 
-cmd
+### What the Scripts Do
 
+1. Verify that Java is installed on your system.
+2. Compile the application into an installable package file (`app-debug.apk`).
+3. If an Android device or emulator is connected via USB with debugging active, install and launch the app automatically.
+4. If no device is connected, display the full path of the compiled package file so you can transfer it to your phone manually.
 
+---
+
+## Option 2: Manual Build
+
+### Windows
+
+```cmd
 cd C:\path\to\refextract
 gradle assembleDebug
-For macOS or Linux:
+```
 
-bash
+### macOS or Linux
 
-
+```bash
 cd /path/to/refextract
 ./gradlew assembleDebug
-The compiled package is generated at: app/build/outputs/apk/debug/app-debug.apk
+```
+
+The compiled package is generated at:
+`app/build/outputs/apk/debug/app-debug.apk`
 
 Transfer this file to your phone via USB cable, cloud storage, or email. Tap the file on your phone to install it. If prompted, allow installation from unknown sources in your phone settings.
 
-How to Use the App
-Open RefExtract on your phone or emulator.
-Type or paste any text into the main input box. The app analyzes your text automatically as you type.
-Detected items are highlighted in the interactive viewer by category:
-References and Citations (DOIs, academic citations, bracketed numbers, web links)
-Quotations and Direct Speech with speaker attributions
-Named Entities (People, Companies, Institutions, Locations, Technologies)
-Metrics and Financials (Currencies, Percentages, Quantities)
-Temporal Dates (Calendar dates, Numeric formats, Fiscal quarters)
-Tap any highlighted element to inspect its metadata.
-Use the filter chips to narrow results by category.
-Use the top menu to export results in JSON, CSV, or Markdown format.
+---
+
+## How to Use the App
+
+1. Open **RefExtract** on your phone or emulator.
+2. Type or paste any text into the main text input box.
+3. The app analyzes your text automatically as you type.
+4. Detected items are highlighted in the interactive viewer by category:
+   - **References and Citations**: DOIs, academic citations, bracketed numbers, web links.
+   - **Quotations and Direct Speech**: Direct quotes with speaker attributions.
+   - **Named Entities**: People, companies, institutions, locations, technologies.
+   - **Metrics and Financials**: Currencies, percentages, quantities.
+   - **Temporal Dates**: Calendar dates, numeric formats, fiscal quarters.
+5. Tap any highlighted element to inspect its metadata.
+6. Use the filter chips to narrow results by category.
+7. Use the top menu to export results in JSON, CSV, or Markdown format.
