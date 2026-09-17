@@ -1,8 +1,4 @@
-Searched for "apiKey"
-Viewed GeminiExtractionService.kt:1-194
-Viewed build.gradle.kts:1-141
-Viewed .env.example:1-4
-Searched for "API Key"
+
 
 # RefExtract User Guide
 
