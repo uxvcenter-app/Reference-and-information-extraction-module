@@ -33,6 +33,8 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.PlayArrow
@@ -61,6 +63,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,6 +75,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -83,6 +88,9 @@ import com.example.ui.MainViewModel
 import com.example.ui.components.ExtractedItemCard
 import com.example.ui.components.HighlightedTextView
 import com.example.ui.components.getCategoryColor
+
+// Input growing by more than this many characters in one edit is treated as a paste
+private const val PASTE_THRESHOLD_CHARS = 20
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -101,6 +109,14 @@ fun ExtractorScreen(
 
     var showPresetMenu by remember { mutableStateOf(false) }
     var showConfigPanel by remember { mutableStateOf(false) }
+    var showInspector by remember { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val dismissKeyboard = {
+        keyboardController?.hide()
+        focusManager.clearFocus()
+    }
 
     val filteredItems = remember(currentResult, selectedCategoryFilter) {
         val all = currentResult?.items ?: emptyList()
@@ -205,7 +221,13 @@ fun ExtractorScreen(
             // Text Input Box
             OutlinedTextField(
                 value = inputText,
-                onValueChange = { viewModel.onInputTextChanged(it) },
+                onValueChange = { newText ->
+                    // A large jump in length means a paste: dismiss the keyboard so results are visible
+                    if (newText.length - inputText.length > PASTE_THRESHOLD_CHARS) {
+                        dismissKeyboard()
+                    }
+                    viewModel.onInputTextChanged(newText)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
@@ -241,6 +263,7 @@ fun ExtractorScreen(
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                 val clip = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                                 if (!clip.isNullOrBlank()) {
+                                    dismissKeyboard()
                                     viewModel.onInputTextChanged(clip)
                                     viewModel.analyze()
                                 } else {
@@ -423,21 +446,7 @@ fun ExtractorScreen(
             }
         }
 
-        // Interactive Annotated Text Viewer
-        if (currentResult != null && currentResult!!.items.isNotEmpty()) {
-            item {
-                HighlightedTextView(
-                    text = currentResult!!.inputText,
-                    items = currentResult!!.items,
-                    selectedItemId = selectedItemId,
-                    onItemClick = { item ->
-                        viewModel.selectItem(item.id)
-                    }
-                )
-            }
-        }
-
-        // Category Filter Chips
+        // Category Filter Chips (kept directly under the button so results are visible without scrolling)
         if (currentResult != null) {
             item {
                 Column {
@@ -520,6 +529,37 @@ fun ExtractorScreen(
                 }
             }
 
+            // Interactive Annotated Text Viewer, collapsed by default because it repeats the whole
+            // input and would otherwise push the results list off-screen for long documents
+            if (currentResult!!.items.isNotEmpty()) {
+                item {
+                    Column {
+                        TextButton(
+                            onClick = { showInspector = !showInspector },
+                            modifier = Modifier.testTag("toggle_inspector_button")
+                        ) {
+                            Icon(
+                                imageVector = if (showInspector) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(if (showInspector) "Hide highlighted text" else "Show highlighted text")
+                        }
+                        AnimatedVisibility(visible = showInspector) {
+                            HighlightedTextView(
+                                text = currentResult!!.inputText,
+                                items = currentResult!!.items,
+                                selectedItemId = selectedItemId,
+                                onItemClick = { item ->
+                                    viewModel.selectItem(item.id)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
             // Results List
             if (filteredItems.isEmpty()) {
                 item {
@@ -537,7 +577,11 @@ fun ExtractorScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "No items match current filter criteria.",
+                                text = if (selectedCategoryFilter != null) {
+                                    "No items match current filter criteria."
+                                } else {
+                                    "Nothing recognised in this text. The local engine works best on English text containing names, quotes, dates, amounts or references."
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
